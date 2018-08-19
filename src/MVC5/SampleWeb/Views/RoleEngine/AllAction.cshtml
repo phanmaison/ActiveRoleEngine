@@ -1,0 +1,302 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using System.Threading.Tasks;
+@using System.Reflection;
+@using System.Web.Mvc;
+@using ActiveRoleEngine
+
+<style>
+    .tooltip-inner
+    {
+        white-space: pre-wrap;
+        text-align: left;
+        max-width: 400px;
+    }
+
+    .controller-container {
+        padding: 15px;
+        background-color: #f5f5f5;
+        margin-bottom: 15px;
+        border-radius: 5px;
+    }
+
+    .controller-container a
+        {
+            display: inline-block;
+        }
+
+        .controller-container table
+        {
+            width: 94%;
+            margin-left: 3%;
+        }
+
+        .controller-container td
+        {
+            word-break: break-word;
+            padding: 2px 10px;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        .controller-container label
+        {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+
+
+    .controller-block
+    {
+        /*border-bottom: 1px solid #ccc;*/
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+
+        .controller-block > a
+        {
+            font-size: larger;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .controller-block label
+        {
+            cursor: pointer;
+        }
+
+    .method-block
+    {
+        background-color: #fff;
+        border-radius: 5px;
+        padding-bottom: 10px;
+    }
+
+        .method-block a
+        {
+            margin: 5px 0;
+        }
+
+        .method-block table
+        {
+            border-radius: 5px;
+            background-color: #f1f1f1;
+        }
+
+    .action-block
+    {
+        margin-left: 15px;
+        margin-bottom: 10px;
+    }
+
+    .permission-not-defined
+    {
+        color: red;
+        padding: 0 5px;
+    }
+
+    .permission-defined
+    {
+        color: yellow;
+        background-color: darkgreen;
+        padding: 0 5px;
+    }
+
+    .permission-type-Permisson
+    {
+        color: green;
+        background-color: yellow;
+        padding: 0 5px;
+    }
+
+    .permission-type-NoPermission
+    {
+        color: blue;
+        background-color: aqua;
+        padding: 0 5px;
+    }
+
+    .permission-type-SuperAdmin
+    {
+        font-weight: bold;
+        color: red;
+        background-color: yellow;
+        padding: 0 5px;
+    }
+
+    .user-permission-yes
+    {
+        color: blue;
+        background-color: aqua;
+        padding: 0 5px;
+    }
+
+    .user-permission-no
+    {
+        color: red;
+        background-color: yellow;
+        padding: 0 5px;
+    }
+</style>
+<h2 class="text-center" style="margin: 20px 0;">All Actions</h2>
+<hr />
+<div class="row" id="accordion">
+    @{
+        const string PERMISSION_NOT_DEFINED = "<span class='permission-not-defined'>[Not Defined]</span>";
+        const string PERMISSION_DEFINED = "<span class='permission-defined'>{0}</span>";
+
+        const string PERMISSION_TYPE = "<span class='permission-type-{0}'>{0}</span>";
+        const string PERMISSION_TOOLTIP = "&nbsp;<i class='fa fa-question-circle-o' title='<b>Desc:</b> {0} \n<b>Group:</b> {1}' data-toggle='tooltip' data-placement='top' data-html='true'></i>";
+
+
+        var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type != null
+                && type.IsPublic
+                && typeof(IController).IsAssignableFrom(type)
+                && !type.IsAbstract);
+
+        int currentIndex = 0;
+
+        foreach (Type controllerType in controllerTypes)
+        {
+            currentIndex++;
+
+            string areaName = ActiveRoleEngineHelper.GetControllerArea(controllerType);
+            if (!string.IsNullOrEmpty(areaName) )
+            {
+                areaName += "/";
+            }
+            string controllerName = ActiveRoleEngineHelper.GetControllerName(controllerType);
+            string controllerUrl = areaName + controllerName;
+
+            PermissionModel permissionModel = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(controllerType) ?
+                ActiveRoleEngine.PermissionDictionaryCache[controllerType] : null;
+
+            string permissionId;
+            string permissionType;
+            string permissionTooltip;
+
+            if (permissionModel == null)
+            {
+                permissionId = PERMISSION_NOT_DEFINED;
+                permissionType = PERMISSION_NOT_DEFINED;
+                permissionTooltip = null;
+            }
+            else
+            {
+                permissionId = string.Format(PERMISSION_DEFINED, permissionModel.PermissionId);
+                permissionType = string.Format(PERMISSION_TYPE, permissionModel.PermissionType);
+                permissionTooltip = string.Format(PERMISSION_TOOLTIP, permissionModel.Description, permissionModel.Group);
+            }
+
+            var methods = controllerType
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(method => method.ReturnType.IsAssignableFrom(typeof(ActionResult)) && !method.Name.StartsWith("get_"));
+
+            var methodCount = methods.Count();
+
+            var userPermission = ActiveUserEngine.HasPermission(permissionModel) ?
+                "<span class='user-permission-yes'>Yes</span>" :
+                "<span class='user-permission-no'>No</span>";
+
+            <div class="col-md-6">
+                <div class="controller-container">
+                    <div class="controller-block collapsed" data-toggle="collapse" data-target="#method-@currentIndex" aria-expanded="false" aria-controls="method-@currentIndex">
+                        <a href="/@controllerUrl" target="_test">@areaName@controllerName</a>@Html.Raw(permissionTooltip)
+                        <table>
+                            <tr>
+                                <td>
+                                    <label>PermissionId:</label>
+                                    @Html.Raw(permissionId)
+                                </td>
+                                <td>
+                                    <label>PermissionType:</label>
+                                    @Html.Raw(permissionType)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Authorized:</label>
+                                    @Html.Raw(userPermission)
+                                </td>
+                                <td>
+                                    <label>Actions:</label>
+                                    <b>@methodCount</b> actions
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="method-@currentIndex" class="method-block collapse" data-parent="#accordion">
+                        @foreach (MethodInfo methodInfo in methods)
+                        {
+                            permissionModel = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(methodInfo) ?
+                                ActiveRoleEngine.PermissionDictionaryCache[methodInfo] : null;
+
+                            if (permissionModel == null)
+                            {
+                                permissionId = PERMISSION_NOT_DEFINED;
+                                permissionType = PERMISSION_NOT_DEFINED;
+                                permissionTooltip = null;
+                            }
+                            else
+                            {
+                                permissionId = string.Format(PERMISSION_DEFINED, permissionModel.PermissionId);
+                                permissionType = string.Format(PERMISSION_TYPE, permissionModel.PermissionType);
+                                permissionTooltip = string.Format(PERMISSION_TOOLTIP, permissionModel.Description, permissionModel.Group);
+                            }
+
+                            userPermission = ActiveUserEngine.HasPermission(permissionModel) ?
+                               "<span class='user-permission-yes'>Yes</span>" :
+                               "<span class='user-permission-no'>No</span>";
+
+
+                            string actionUrl = controllerUrl + "/" + methodInfo.Name;
+
+                            <div class="action-block">
+                                <a href="/@actionUrl" target="_test">@methodInfo.Name</a>@Html.Raw(permissionTooltip)
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label>PermissionId:</label>
+                                            @Html.Raw(permissionId)
+                                        </td>
+                                        <td>
+                                            <label>PermissionType:</label>
+                                            @Html.Raw(permissionType)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label>Authorized:</label>
+                                            @Html.Raw(userPermission)
+                                        </td>
+                                        <td>
+                                            <label>Accept Verbs:</label>
+                                            @Html.Raw(ActiveRoleEngineHelper.GetAcceptVerbs(methodInfo))
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <label>Params:</label>
+                                            @Html.Raw(ActiveRoleEngineHelper.GetMethodsParams(methodInfo))
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<script>
+    $(function () {
+        //$('[data-toggle="tooltip"]').tooltip();
+    })
+</script>

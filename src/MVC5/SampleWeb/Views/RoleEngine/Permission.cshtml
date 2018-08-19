@@ -1,0 +1,32 @@
+﻿@using SampleWeb.DbContext
+@{
+    ViewBag.Title = "Permission Management";
+
+    var listPermission = SampleDbContext.Current.Permissions;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>PermissionId</th>
+            <th>PermissionName</th>
+            <th>PermissionGroup</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var permission in listPermission)
+        {
+            <tr>
+                <td>@permission.PermissionId</td>
+                <td>@permission.PermissionName</td>
+                <td>@permission.PermissionGroup</td>
+                <td>@permission.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

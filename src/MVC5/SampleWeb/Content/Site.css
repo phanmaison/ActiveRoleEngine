@@ -1,0 +1,62 @@
+﻿
+.error-table
+{
+    /*width: 95%;*/
+    margin: 50px auto 0
+}
+
+    .error-table td
+    {
+        padding: 10px;
+        vertical-align: top;
+    }
+
+.error-code
+{
+    text-align: center;
+    color: crimson;
+    border: 1px solid crimson;
+    border-radius: 10px;
+    padding: 20px;
+    line-height: 128px;
+    font-size: 128px;
+    font-weight: 300;
+    cursor: crosshair;
+}
+
+.error-message
+{
+    text-align: left;
+    color: crimson;
+    word-break: break-all;
+}
+
+.error-detail
+{
+    color: #888;
+    margin-top: 20px;
+    font-size: small;
+    line-height: 1.8em;
+    word-break: break-all;
+}
+
+a.link, .error-table a.link:hover, .error-table a.link:visited
+{
+    color: crimson;
+    border: crimson 1px solid;
+    padding: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+
+
+@media only screen and (max-width: 767px)
+{
+    .error-table td
+    {
+        display: contents;
+    }
+}

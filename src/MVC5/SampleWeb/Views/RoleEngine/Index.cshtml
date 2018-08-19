@@ -1,0 +1,71 @@
+﻿@using System.Reflection
+@using ActiveRoleEngine
+@helper DisplayPermission(string permissionType, List<PermissionModel> listPermission)
+    {
+        <h3>@Html.Raw(permissionType)</h3>
+        if (listPermission != null)
+        {
+
+            var listGroup = listPermission.Select(p => p.Group).Distinct();
+
+            foreach (var group in listGroup)
+            {
+                <nav class="nav-permission">
+                    <h5>Group: @(string.IsNullOrEmpty(group) ? "[No Group]" : group)</h5>
+
+                    @foreach (var item in listPermission.Where(p => p.Group == group))
+                    {
+                        var actualLink = ActiveRoleEngineHelper.GetPermissionId(string.Empty, item.Area, item.Controller, item.Action);
+
+                        <header>
+                            <a href="/@actualLink" target="_test">@item.PermissionId</a>
+                            <small>@item.Description</small>
+                        </header>
+                    }
+                </nav>
+            }
+        }
+}
+@{
+    var listPermissionModel_NonSuperAdmin = ActiveRoleEngine.NonSuperAdminPermissions;
+    var listPermissionModel_SuperAdmin = ActiveRoleEngine.SuperAdminPermissions;
+}
+<style>
+    nav.nav-permission
+    {
+        padding: 15px;
+        background-color: #f5f5f5;
+        margin: 20px 0;
+        border-radius: 5px;
+    }
+
+    header
+    {
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+
+        header > a
+        {
+            display: block;
+        }
+
+        header > small
+        {
+            font-style: italic;
+        }
+</style>
+
+<h2 class="text-center" style="margin: 20px 0;">Defined Permissions</h2>
+<div class="jumbotron">
+Hereunder are permissions defined in the source code
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        @DisplayPermission("Non-SuperAdmin", listPermissionModel_NonSuperAdmin)
+    </div>
+    <div class="col-md-6">
+        @DisplayPermission("Super Admin", listPermissionModel_SuperAdmin)
+    </div>
+</div>

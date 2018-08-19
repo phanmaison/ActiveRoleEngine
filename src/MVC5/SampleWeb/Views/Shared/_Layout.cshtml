@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="https://github.com/phanmaison/ActiveRoleEngine">Role Engine Demo</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RoleEngine">Defined Permissions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RoleEngine/AllAction">All Actions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RoleEngine/Permission">Permissions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RoleEngine/Role">Roles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RoleEngine/User">Users</a>
+                    </li>
+                </ul>
+                <div class="float-right">
+                    <ul class="navbar-nav">
+                        @if (CurrentUser.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="javascript:;">Welcome @CurrentUser.User.Username</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Account/LogOff">Log Off</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Account/Login">Log In</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div>
+            <div class="row">
+                <div class="col-md-2">
+                    @Html.Partial("_SideMenu")
+                </div>
+                <div class="col-md-10">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+        <hr />
+        <footer style="padding-left: 15px;">
+            <p>
+                &copy; @DateTime.Now.Year - <a href="https://github.com/phanmaison/" target="_blank">phanmaison</a>
+            </p>
+        </footer>
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
