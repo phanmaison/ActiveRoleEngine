@@ -13,7 +13,6 @@ using SampleWeb.Models;
 namespace SampleWeb.Controllers
 {
     [ActivePermission(Group = "Role Engine", Permission = "Admin", Description = "Manage role engine")]
-    [Authorize(Users = "Admin, Manager", Roles = "Manager")]
     public class RoleEngineController : ActiveControllerBase
     {
 

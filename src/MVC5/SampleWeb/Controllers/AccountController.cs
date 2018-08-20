@@ -51,6 +51,9 @@ namespace SampleWeb.Controllers
                 return View(model);
             }
 
+            // get the user permission
+            sysUser.Permissions = CurrentUser.GetUserPermission(sysUser.UserId);
+
             ActiveUserEngine.LoginUser(Request, sysUser, model.RememberMe);
 
             return RedirectToLocal(returnUrl);

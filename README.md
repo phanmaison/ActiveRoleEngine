@@ -152,5 +152,3 @@ Entire sample is provided in SampleWeb application for your reference. The data 
 ### Contributor
 The first version is developed using ASP.NET MVC5 and will be developed for .NET Core soon.    
 I'm looking for contributors to ship the solution to Java, PHP, NodeJs, Go, .. or recommend the existing solution so that I will put the reference here.
-**
-**
