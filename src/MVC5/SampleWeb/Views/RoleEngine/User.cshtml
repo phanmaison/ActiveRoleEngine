@@ -1,0 +1,43 @@
+﻿@using SampleWeb.DbContext
+
+@{
+    ViewBag.Title = "User Management";
+
+    var listUser = SampleDbContext.Current.Users;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="jumbotron p-3">
+    Manage Users
+</div>
+<table class="table table-bordered">
+    <thead class="bg-light">
+        <tr>
+            <th>Username</th>
+            <th>FullName</th>
+            <th>IsSuperAdmin</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var user in listUser)
+        {
+            <tr>
+                <td>@user.Username</td>
+                <td>@user.FullName</td>
+                <td>@user.IsSuperAdmin</td>
+                <td>
+                    <a href="/RoleEngine/UserView/@user.UserId" class="btn btn-light">View</a>
+                    <a href="/RoleEngine/UserEdit/@user.UserId" class="btn btn-light">Edit</a>
+                    <a href="/RoleEngine/UserPermission/@user.UserId" class="btn btn-light">Permission</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a class="btn btn-primary" href="/RoleEngine/UserAdd" role="button">Add</a>
+</div>
+

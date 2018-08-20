@@ -44,20 +44,6 @@ namespace ActiveRoleEngine
             Func<string, bool> restoreUserSessionHandler,
             Action<AuthorizationContext, AuthorizeResult> processUnauthorizedRequest)
         {
-            //if (unauthorizedHandlerModel != null)
-            //{
-            //    if (unauthorizedHandlerModel.Controller.IsNullOrWhiteSpace())
-            //        throw new ArgumentNullException("UnauthorizedHandlerModel.Controller is not defined");
-
-            //    if (unauthorizedHandlerModel.Action.IsNullOrWhiteSpace())
-            //        throw new ArgumentNullException("UnauthorizedHandlerModel.Action is not defined");
-
-            //    ActiveRoleEngine.UnauthorizedHandlerModel = unauthorizedHandlerModel;
-            //}
-
-            //if (systemPermissions == null)
-            //    throw new ArgumentNullException(nameof(systemPermissions));
-
             ActiveRoleEngine.RestoreUserSessionHandler = restoreUserSessionHandler;
             ActiveRoleEngine.ProcessUnauthorizedRequest = processUnauthorizedRequest;
 
@@ -113,7 +99,7 @@ namespace ActiveRoleEngine
             get => _nonSuperAdminPermissions ??
                 (_nonSuperAdminPermissions = PermissionDictionaryCache.Values
                     .Where(p => p.PermissionType != PermissionType.SuperAdmin &&
-                                p.PermissionType != PermissionType.Authorized &&
+                                p.PermissionType != PermissionType.Authenticated &&
                                 p.PermissionType != PermissionType.AuthorizedInternal &&
                                 p.PermissionType != PermissionType.AuthorizedExternal)
                     .ToList());

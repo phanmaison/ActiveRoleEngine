@@ -57,14 +57,12 @@
                 </div>
             </div>
         </nav>
-        <div>
-            <div class="row">
-                <div class="col-md-2">
-                    @Html.Partial("_SideMenu")
-                </div>
-                <div class="col-md-10">
-                    @RenderBody()
-                </div>
+        <div class="row mt-3">
+            <div class="col-md-2">
+                @Html.Partial("_SideMenu")
+            </div>
+            <div class="col-md-10">
+                @RenderBody()
             </div>
         </div>
         <hr />

@@ -96,7 +96,7 @@ namespace SampleWeb.Controllers
         {
             return AuthorizedContent();
         }
-        [ActivePermission(Description = "Custom Permission")]
+        [ActivePermission(Permission = "CustomPermission", Description = "Custom Permission")]
         public ActionResult Action4()
         {
             return AuthorizedContent();
@@ -124,8 +124,6 @@ namespace SampleWeb.Controllers
         {
             return AuthorizedContent();
         }
-
-
     }
 
 }

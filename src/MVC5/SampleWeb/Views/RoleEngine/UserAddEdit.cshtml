@@ -1,0 +1,88 @@
+﻿@using SampleWeb.DbContext
+@model SampleWeb.Models.UserAddEditModel
+@{
+    var listRole = SampleDbContext.Current.Roles;
+
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="jumbotron p-3">
+    Add / Edit User
+</div>
+
+@using (Html.BeginForm("UserSave", "RoleEngine", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.UserId)
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })<br />
+    <h4>User Information</h4>
+    <hr />
+    <div class="row mb-2">
+        <div class="col-3">
+            @Html.LabelFor(m => m.Username)
+        </div>
+        <div class="col-9">
+            @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-3">
+            @Html.LabelFor(m => m.FullName)
+        </div>
+        <div class="col-9">
+            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    @*<div class="row mb-2">
+            <div class="col-3">
+            </div>
+            <div class="col-9">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" name="IsSuperAdmin" id="IsSuperAdmin" class="custom-control-input" @if (Model.IsSuperAdmin) { <text> checked</text>} />
+                    <label class="custom-control-label" for="IsSuperAdmin">Is Super Admin</label>
+                </div>
+            </div>
+        </div>*@
+    <div class="mb-2">
+        <h4>
+            Roles
+            <span class="float-right">
+                <a class="btn btn-outline-light btn-sm mr-2 small text-primary" href="javascript:;" id="selectAll">Select All</a>
+                <a class="btn btn-outline-light btn-sm small text-primary" href="javascript:;" id="clearAll">Clear All</a>
+            </span>
+        </h4>
+        <hr />
+        <div class="ml-3">
+            @foreach (var role in listRole)
+            {
+                bool check = Model != null && Model.Roles != null && Model.Roles.Contains(role.RoleId);
+
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" name="Roles" value="@role.RoleId" id="@role.RoleId" class="custom-control-input" @if (check) { <text> checked</text>} />
+                    <label class="custom-control-label" for="@role.RoleId">@role.RoleName</label><br />
+                    <small>@role.Description</small>
+                </div>
+            }
+        </div>
+    </div>
+    <div>
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a class="btn btn-secondary" href="/RoleEngine/User">Back</a>
+    </div>
+}
+
+<script>
+    $(function () {
+        $("#selectAll").click(function () {
+            $("[name=Roles]").prop("checked", true);
+        });
+        $("#clearAll").click(function () {
+            $("[name=Roles]").prop("checked", false);
+        });
+
+    });
+
+</script>

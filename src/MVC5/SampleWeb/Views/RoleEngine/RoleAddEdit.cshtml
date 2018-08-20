@@ -1,0 +1,90 @@
+﻿@using SampleWeb.DbContext
+@model SampleWeb.Models.RoleAddEditModel
+@{
+    // ViewBag.Title = "RoleAdd";
+
+    var listPermission = SampleDbContext.Current.Permissions;
+    var listGroup = listPermission.Select(p => p.PermissionGroup).Distinct();
+
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="jumbotron p-3">
+    Add / Edit Role
+</div>
+
+@using (Html.BeginForm("RoleSave", "RoleEngine", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.RoleId)
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })<br />
+    <h4>Role Information</h4>
+    <hr />
+    <div class="row mb-2">
+        <div class="col-3">
+            @Html.LabelFor(m => m.RoleName)
+        </div>
+        <div class="col-9">
+            @Html.TextBoxFor(m => m.RoleName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.RoleName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-3">
+            @Html.LabelFor(m => m.Description)
+        </div>
+        <div class="col-9">
+            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="mb-2">
+        <h4>
+            Permissions
+            <span class="float-right">
+                <a class="btn btn-outline-light btn-sm mr-2 small text-primary" href="javascript:;" id="selectAll">Select All</a>
+                <a class="btn btn-outline-light btn-sm small text-primary" href="javascript:;" id="clearAll">Clear All</a>
+            </span>
+        </h4>
+        <hr />
+        <div class="ml-3">
+            @foreach (var group in listGroup)
+            {
+                var listPermissionGroup = listPermission.Where(p => p.PermissionGroup == group);
+
+                <h5>Group: @group</h5>
+                foreach (var permission in listPermissionGroup)
+                {
+                    bool check = Model != null && Model.Permissions != null && Model.Permissions.Contains(permission.PermissionId);
+
+                    var tempId = Guid.NewGuid();
+
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" name="Permissions" value="@permission.PermissionId" id="@tempId" class="custom-control-input" @if (check) { <text> checked</text>} />
+                        <label class="custom-control-label" for="@tempId">@permission.PermissionName</label><br />
+                        <small>@permission.Description</small>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div>
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a class="btn btn-secondary" href="/RoleEngine/Role">Back</a>
+    </div>
+}
+
+<script>
+    $(function () {
+        $("#selectAll").click(function () {
+            $("[name=Permissions]").prop("checked", true);
+        });
+        $("#clearAll").click(function () {
+            $("[name=Permissions]").prop("checked", false);
+        });
+
+
+    });
+
+</script>

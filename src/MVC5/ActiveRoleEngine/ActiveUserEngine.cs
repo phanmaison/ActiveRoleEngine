@@ -201,7 +201,7 @@ namespace ActiveRoleEngine
 
             switch (permission.PermissionType)
             {
-                case PermissionType.Authorized:
+                case PermissionType.Authenticated:
                     // user is not null => Authenticated
                     return true;
                 case PermissionType.SuperAdmin:

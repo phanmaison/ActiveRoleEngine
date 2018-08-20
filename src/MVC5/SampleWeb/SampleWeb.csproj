@@ -133,7 +133,6 @@
     <Compile Include="AppCode\DbContext\SampleDbContext.cs" />
     <Compile Include="AppCode\Domain\AllDomains.cs" />
     <Compile Include="AppCode\MockDB\MockDb.cs" />
-    <Compile Include="AppCode\Repository\AllRepos.cs" />
     <Compile Include="AppCode\UserModel.cs" />
     <Compile Include="App_Start\AuthConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -150,6 +149,9 @@
     </Compile>
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\UserAddEditModel.cs" />
+    <Compile Include="Models\RoleAddEditModel.cs" />
+    <Compile Include="Models\UserPermissionSaveModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppCode\Menu\" />
-    <Folder Include="AppCode\Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
@@ -189,6 +190,12 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\_Layout.cshtml" />
     <Content Include="Views\RoleEngine\Permission.cshtml" />
+    <Content Include="Views\RoleEngine\Role.cshtml" />
+    <Content Include="Views\RoleEngine\RoleAddEdit.cshtml" />
+    <Content Include="Views\RoleEngine\User.cshtml" />
+    <Content Include="Views\RoleEngine\UserAddEdit.cshtml" />
+    <Content Include="Views\RoleEngine\UserView.cshtml" />
+    <Content Include="Views\RoleEngine\UserPermission.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ActiveRoleEngine\ActiveRoleEngine.csproj">

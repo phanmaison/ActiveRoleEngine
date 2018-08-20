@@ -6,9 +6,16 @@
 }
 
 <h2>@ViewBag.Title</h2>
+<div class="jumbotron p-3">
+    This screen is used to manage the permission<br />
+    You can append the functionality to add, edit, delete the permission<br />
+    So far, for demo purpose, only Import is implemented<br />
+    Import: copy permissions from defined permission collection (source code definition)<br />
+
+</div>
 
 <table class="table table-bordered">
-    <thead>
+    <thead class="bg-light">
         <tr>
             <th>PermissionId</th>
             <th>PermissionName</th>
@@ -29,4 +36,10 @@
         }
     </tbody>
 </table>
+<div>
+    @using (Html.BeginForm("PermissionImport", "RoleEngine", FormMethod.Post))
+    {
+        <input type="submit" value="Import" class="btn btn-default" />
+    }
+</div>
 

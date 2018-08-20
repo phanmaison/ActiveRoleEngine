@@ -10,7 +10,7 @@ using SampleWeb.Domain;
 
 namespace SampleWeb
 {
-    
+
     /// <summary>
     /// Current User
     /// </summary>
@@ -51,9 +51,10 @@ namespace SampleWeb
             else
             {
                 // get the user permission
-                user.Permissions = SampleDbContext.Current.UserPermissions
-                    .Where(x => x.UserId == user.UserId)
-                    .Select(up => up.PermissionId).ToList();
+                user.Permissions = GetUserPermission(user.UserId);
+                    //SampleDbContext.Current.UserPermissions
+                    //.Where(x => x.UserId == user.UserId)
+                    //.Select(up => up.PermissionId).ToList();
 
                 ActiveUserEngine.CurrentUser = user;
 
@@ -62,5 +63,37 @@ namespace SampleWeb
         }
 
         #endregion RestoreUserSession
+
+        public static List<string> GetUserPermission(Guid userId)
+        {
+            // get inherit permission from roles
+
+            // get all assigned roles
+            var userRoles = SampleDbContext.Current.UserRoles
+                .Where(ur => ur.UserId == userId)
+                .Select(ur => SampleDbContext.Current.Roles.FirstOrDefault(r => r.RoleId == ur.RoleId).RoleId).ToList();
+
+            // get all role permissions
+            var rolePermissions = SampleDbContext.Current.RolePermissions
+                .Where(rp => userRoles.Contains(rp.RoleId))
+                .Select(rp => rp.PermissionId).ToList();
+
+            // remove override permission
+            var removePermissions = SampleDbContext.Current.UserPermissions
+                .Where(up => up.UserId == userId && up.IsAdd == false)
+                .Select(up => up.PermissionId).ToList();
+
+            rolePermissions.RemoveAll(p => removePermissions.Contains(p));
+
+            // add override permission
+            var addPermission = SampleDbContext.Current.UserPermissions
+                .Where(up => up.UserId == userId && up.IsAdd == true)
+                .Select(up => up.PermissionId).ToList();
+
+            rolePermissions.AddRange(addPermission);
+
+            // return
+            return rolePermissions.Distinct().ToList();
+        }
     }
 }

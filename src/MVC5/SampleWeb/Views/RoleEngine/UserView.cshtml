@@ -1,0 +1,98 @@
+﻿@using SampleWeb.DbContext
+@model SampleWeb.Models.UserAddEditModel
+@{
+    var listRole = SampleDbContext.Current.Roles;
+    var listUserPermission = SampleDbContext.Current.UserPermissions
+        .Where(up => up.UserId == Model.UserId)
+        .Select(up => new
+        {
+            up.PermissionId,
+            up.IsAdd,
+            SampleDbContext.Current.Permissions.FirstOrDefault(p => p.PermissionId == up.PermissionId).PermissionName
+        }).ToList();
+
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="jumbotron p-3">
+    Add / Edit User
+</div>
+
+<h4>User Information</h4>
+<hr />
+<div class="row mb-2">
+    <div class="col-3">
+        @Html.LabelFor(m => m.Username)
+    </div>
+    <div class="col-9">
+        @Html.DisplayFor(m => m.Username, new { @class = "form-control" })
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-3">
+        @Html.LabelFor(m => m.FullName)
+    </div>
+    <div class="col-9">
+        @Html.DisplayFor(m => m.FullName, new { @class = "form-control" })
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-3">
+    </div>
+    <div class="col-9">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" name="Permissions" id="IsSuperAdmin" class="custom-control-input" @if (Model.IsSuperAdmin) { <text> checked</text>} disabled />
+            <label class="custom-control-label" for="IsSuperAdmin">Is Super Admin</label>
+        </div>
+    </div>
+</div>
+<nav class="mt-2">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-role-tab" data-toggle="tab" href="#nav-role" role="tab" aria-controls="nav-role" aria-selected="true">Role <span class="badge badge-info">@listRole.Count</span></a>
+        <a class="nav-item nav-link" id="nav-permission-tab" data-toggle="tab" href="#nav-permission" role="tab" aria-controls="nav-permission" aria-selected="false">Override Permission <span class="badge badge-info">@listUserPermission.Count</span></a>
+    </div>
+</nav>
+<div class="tab-content mb-2" id="nav-tabContent" style="border: 1px solid #ccc; padding: 15px;">
+    <div class="tab-pane fade show active" id="nav-role" role="tabpanel" aria-labelledby="nav-role-tab">
+        <div class="ml-3 mt-2">
+            @foreach (var role in listRole)
+            {
+                bool check = Model != null && Model.Roles != null && Model.Roles.Contains(role.RoleId);
+
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" name="Roles" value="@role.RoleId" id="@role.RoleId" class="custom-control-input" @if (check) { <text> checked</text>} disabled />
+                    <label class="custom-control-label" for="@role.RoleId">@role.RoleName</label><br />
+                    <small>@role.Description</small>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="tab-pane fade" id="nav-permission" role="tabpanel" aria-labelledby="nav-permission-tab">
+        <table class="table table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th>Permission Id</th>
+                    <th>Permission Name</th>
+                    <th>Add / Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var permission in listUserPermission)
+                {
+                    <tr>
+                        <td>@permission.PermissionId</td>
+                        <td>@permission.PermissionName</td>
+                        <td>@(permission.IsAdd ? "Add" : "Remove")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+<div class="mt-3">
+    <a class="btn btn-secondary" href="/RoleEngine/User">Back</a>
+    <a class="btn btn-primary" href="/RoleEngine/UserEdit/@Model.UserId">Edit</a>
+    <a class="btn btn-primary" href="/RoleEngine/UserPermission/@Model.UserId">Permission</a>
+</div>

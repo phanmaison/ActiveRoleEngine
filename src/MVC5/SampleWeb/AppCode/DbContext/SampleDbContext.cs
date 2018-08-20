@@ -20,6 +20,8 @@ namespace SampleWeb.DbContext
         {
             // Initialize the data
 
+            #region Users
+
             Guid saGuid = Guid.NewGuid();
 
             Users.Add(new SysUser
@@ -54,6 +56,44 @@ namespace SampleWeb.DbContext
                 Password = "",
                 FullName = "user3"
             });
+
+            #endregion Users
+
+            #region Role
+
+            Roles.Add(new SysRole
+            {
+                RoleId = Guid.NewGuid(),
+                RoleName = "Role 1",
+                Description = "Role 1"
+            });
+            
+            Roles.Add(new SysRole
+            {
+                RoleId = Guid.NewGuid(),
+                RoleName = "Role 2",
+                Description = "Role 2"
+            });
+
+            #endregion Role
+
+            #region Permission
+
+            // preset data for permission
+
+            Permissions.Add(new SysPermission
+            {
+                PermissionId = "Permission1",
+                PermissionName = "Permission1"
+            });
+            Permissions.Add(new SysPermission
+            {
+                PermissionId = "Permission2",
+                PermissionName = "Permission2"
+            });
+
+
+            #endregion Permission
         }
 
         public static SampleDbContext Current { get; } = new SampleDbContext();

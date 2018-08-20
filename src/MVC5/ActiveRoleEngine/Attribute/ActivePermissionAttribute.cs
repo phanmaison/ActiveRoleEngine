@@ -223,7 +223,7 @@ namespace ActiveRoleEngine
 
             switch (permission.PermissionType)
             {
-                case PermissionType.Authorized:
+                case PermissionType.Authenticated:
                     // ActiveUserEngine.CurrentUser is not null => Authenticated
                     return AuthorizeResult.Success;
 

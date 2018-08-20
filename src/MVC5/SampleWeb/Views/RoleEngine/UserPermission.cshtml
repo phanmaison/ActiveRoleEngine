@@ -1,0 +1,118 @@
+﻿@using SampleWeb.DbContext
+@model SampleWeb.Models.UserAddEditModel
+@{
+    var listPermission = SampleDbContext.Current.Permissions;
+    var listUserPermission = SampleDbContext.Current.UserPermissions
+        .Where(up => up.UserId == Model.UserId).ToList();
+
+}
+<style>
+    td .custom-control
+    {
+        display: inline-block;
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+<div class="jumbotron p-3">
+    Override role permission
+</div>
+
+@Html.HiddenFor(m => m.UserId)
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })<br />
+<h4>User Information</h4>
+<hr />
+<div class="row mb-2">
+    <div class="col-3">
+        @Html.LabelFor(m => m.Username)
+    </div>
+    <div class="col-9">
+        @Html.DisplayFor(m => m.Username, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-3">
+        @Html.LabelFor(m => m.FullName)
+    </div>
+    <div class="col-9">
+        @Html.DisplayFor(m => m.FullName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+    </div>
+</div>
+<h4>Override Permission</h4><small>TODO: display current inherited permissions from role</small>
+<hr />
+@using (Html.BeginForm("UserPermission", "RoleEngine", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.UserId)
+    <table class="table-bordered">
+        <colgroup>
+            <col />
+            <col style="width: 100px" />
+            <col style="width: 100px" />
+            <col style="width: 100px" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Permission Name</th>
+                <th class="text-center">Add</th>
+                <th class="text-center">Remove</th>
+                <th class="text-center">Inherit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < listPermission.Count; i++)
+            {
+                var permission = listPermission[i];
+                var userPermission = listUserPermission.FirstOrDefault(up => up.PermissionId == permission.PermissionId);
+                var addCheck = "";
+                var removeCheck = "";
+                var inheritCheck = "";
+
+                if (userPermission == null)
+                {
+                    inheritCheck = " checked ";
+                }else if (userPermission.IsAdd)
+                {
+                    addCheck = " checked ";
+                }
+                else
+                {
+                    removeCheck = " checked ";
+                }
+
+                <tr>
+                    <td>
+                        <input type="hidden" name="UserPermissions[@i].PermissionId" value="@permission.PermissionId" />
+                        @permission.PermissionName<br />
+                        <small>@permission.Description</small>
+                    </td>
+                    <td class="text-center">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="@(permission.PermissionId)_Add" name="UserPermissions[@i].Value" class="custom-control-input" value="Add" @addCheck>
+                            <label class="custom-control-label" for="@(permission.PermissionId)_Add"></label>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="@(permission.PermissionId)_Remove" name="UserPermissions[@i].Value" class="custom-control-input" value="Remove" @removeCheck>
+                            <label class="custom-control-label" for="@(permission.PermissionId)_Remove"></label>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="@(permission.PermissionId)_Inherit" name="UserPermissions[@i].Value" class="custom-control-input" value="Inherit" @inheritCheck>
+                            <label class="custom-control-label" for="@(permission.PermissionId)_Inherit"></label>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="mt-3">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a class="btn btn-secondary" href="/RoleEngine/User">Back</a>
+    </div>
+}

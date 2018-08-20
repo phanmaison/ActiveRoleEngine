@@ -1,0 +1,38 @@
+﻿@using SampleWeb.DbContext
+
+@{
+    ViewBag.Title = "Role Management";
+
+    var listRole = SampleDbContext.Current.Roles;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="jumbotron p-3">
+    Manage Roles
+</div>
+<table class="table table-bordered">
+    <thead class="bg-light">
+        <tr>
+            <th>RoleName</th>
+            <th>Description</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var role in listRole)
+        {
+            <tr>
+                <td>@role.RoleName</td>
+                <td>@role.Description</td>
+                <td><a href="/RoleEngine/RoleEdit/@role.RoleId" class="btn btn-light">Edit</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a class="btn btn-primary" href="/RoleEngine/RoleAdd" role="button">Add</a>
+</div>
+
+
