@@ -6,7 +6,7 @@
         if (listPermission != null)
         {
 
-            var listGroup = listPermission.Select(p => p.Group).Distinct();
+            var listGroup = listPermission.Select(p => p.Group).Distinct().OrderBy(p => p);
 
             foreach (var group in listGroup)
             {
@@ -56,9 +56,9 @@
         }
 </style>
 
-<h2 class="text-center" style="margin: 20px 0;">Defined Permissions</h2>
-<div class="jumbotron">
-Hereunder are permissions defined in the source code
+<h2 class="text-center" style="margin: 20px 0;">Source Code Defined Permissions</h2>
+<div class="jumbotron p-3">
+    Hereunder are permissions defined in the source code for your reference
 </div>
 <hr />
 <div class="row">

@@ -1,1 +1,62 @@
-﻿TODO: load the action url for quick reference
+﻿@using System.Reflection
+@using ActiveRoleEngine
+<style>
+    .side-menu.list-group > a.list-group-item
+    {
+        border-left-width: 5px;
+    }
+</style>
+<div class="list-group side-menu">
+    <div class="list-group-item h6 bg-light p-2">Quick Access (Test Only)</div>
+
+    @{
+        var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type != null
+                && type.IsPublic
+                && typeof(IController).IsAssignableFrom(type)
+                && !type.IsAbstract)
+            .OrderBy(p => p.Name);
+
+        int currentIndex = 0;
+
+        foreach (Type controllerType in controllerTypes)
+        {
+            currentIndex++;
+
+            string areaName = ActiveRoleEngineHelper.GetControllerArea(controllerType);
+            if (!string.IsNullOrEmpty(areaName))
+            {
+                areaName += "/";
+            }
+            string controllerName = ActiveRoleEngineHelper.GetControllerName(controllerType);
+            string controllerUrl = areaName + controllerName;
+
+            PermissionModel controllerPermission = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(controllerType) ?
+                ActiveRoleEngine.PermissionDictionaryCache[controllerType] : null;
+
+            var methods = controllerType
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(method => method.ReturnType.IsAssignableFrom(typeof(ActionResult)) && !method.Name.StartsWith("get_"));
+
+            var controllerPermissionClass = controllerType.GetCustomAttribute<AllowAnonymousAttribute>() != null || ActiveUserEngine.HasPermission(controllerPermission) ?
+                "border-success" : "border-danger";
+
+            <a class="list-group-item text-dark font-weight-bold p-2 @controllerPermissionClass" href="/@controllerUrl" target="_blank">@controllerName</a>
+
+            foreach (MethodInfo methodInfo in methods)
+            {
+                PermissionModel actionPermission = (ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(methodInfo) ?
+                    ActiveRoleEngine.PermissionDictionaryCache[methodInfo] : null) ?? controllerPermission;
+                
+                var actionPermissionClass = methodInfo.GetCustomAttribute<AllowAnonymousAttribute>() != null ||   ActiveUserEngine.HasPermission(actionPermission) ?
+                "border-success" : "border-danger";
+
+                string actionUrl = controllerUrl + "/" + methodInfo.Name;
+
+                <a class="list-group-item p-1 ml-5 text-dark @actionPermissionClass" href="/@actionUrl" target="_blank">@methodInfo.Name</a>
+
+            }
+        }
+    }
+</div>

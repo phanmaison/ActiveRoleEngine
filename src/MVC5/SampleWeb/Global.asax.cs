@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using SampleWeb.Controllers;
 
 namespace SampleWeb
 {
@@ -18,6 +19,11 @@ namespace SampleWeb
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             AuthConfig.ConfigRoleEngine();
+
+
+            // For testing purpose: always import permission when start application
+            RoleEngineController.ImportPermission();
+
         }
 
         #region Application_Error

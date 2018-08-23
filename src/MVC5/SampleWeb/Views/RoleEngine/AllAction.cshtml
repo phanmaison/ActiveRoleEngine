@@ -15,14 +15,15 @@
         max-width: 400px;
     }
 
-    .controller-container {
+    .controller-container
+    {
         padding: 15px;
         background-color: #f5f5f5;
         margin-bottom: 15px;
         border-radius: 5px;
     }
 
-    .controller-container a
+        .controller-container a
         {
             display: inline-block;
         }
@@ -143,6 +144,10 @@
     }
 </style>
 <h2 class="text-center" style="margin: 20px 0;">All Actions</h2>
+<div class="jumbotron p-3">
+    List all actions in the system with defined permission for testing.<br />
+    Login and go to this screen to verify current user permission<br />
+</div>
 <hr />
 <div class="row" id="accordion">
     @{
@@ -158,7 +163,8 @@
             .Where(type => type != null
                 && type.IsPublic
                 && typeof(IController).IsAssignableFrom(type)
-                && !type.IsAbstract);
+                && !type.IsAbstract)
+            .OrderBy(p => p.Name);
 
         int currentIndex = 0;
 
@@ -167,21 +173,21 @@
             currentIndex++;
 
             string areaName = ActiveRoleEngineHelper.GetControllerArea(controllerType);
-            if (!string.IsNullOrEmpty(areaName) )
+            if (!string.IsNullOrEmpty(areaName))
             {
                 areaName += "/";
             }
             string controllerName = ActiveRoleEngineHelper.GetControllerName(controllerType);
             string controllerUrl = areaName + controllerName;
 
-            PermissionModel permissionModel = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(controllerType) ?
+            PermissionModel controllerPermission = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(controllerType) ?
                 ActiveRoleEngine.PermissionDictionaryCache[controllerType] : null;
 
             string permissionId;
             string permissionType;
             string permissionTooltip;
 
-            if (permissionModel == null)
+            if (controllerPermission == null)
             {
                 permissionId = PERMISSION_NOT_DEFINED;
                 permissionType = PERMISSION_NOT_DEFINED;
@@ -189,9 +195,9 @@
             }
             else
             {
-                permissionId = string.Format(PERMISSION_DEFINED, permissionModel.PermissionId);
-                permissionType = string.Format(PERMISSION_TYPE, permissionModel.PermissionType);
-                permissionTooltip = string.Format(PERMISSION_TOOLTIP, permissionModel.Description, permissionModel.Group);
+                permissionId = string.Format(PERMISSION_DEFINED, controllerPermission.PermissionId);
+                permissionType = string.Format(PERMISSION_TYPE, controllerPermission.PermissionType);
+                permissionTooltip = string.Format(PERMISSION_TOOLTIP, controllerPermission.Description, controllerPermission.Group);
             }
 
             var methods = controllerType
@@ -200,7 +206,7 @@
 
             var methodCount = methods.Count();
 
-            var userPermission = ActiveUserEngine.HasPermission(permissionModel) ?
+            var userPermission = controllerType.GetCustomAttribute<AllowAnonymousAttribute>() != null || ActiveUserEngine.HasPermission(controllerPermission) ?
                 "<span class='user-permission-yes'>Yes</span>" :
                 "<span class='user-permission-no'>No</span>";
 
@@ -234,23 +240,30 @@
                     <div id="method-@currentIndex" class="method-block collapse" data-parent="#accordion">
                         @foreach (MethodInfo methodInfo in methods)
                         {
-                            permissionModel = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(methodInfo) ?
-                                ActiveRoleEngine.PermissionDictionaryCache[methodInfo] : null;
+                            PermissionModel actionPermission = ActiveRoleEngine.PermissionDictionaryCache.ContainsKey(methodInfo) ?
+                                        ActiveRoleEngine.PermissionDictionaryCache[methodInfo] : null;
 
-                            if (permissionModel == null)
+                            if (actionPermission == null)
+                            {
+                                // inherit permission from controller
+                                actionPermission = controllerPermission;
+                            }
+
+                            if (actionPermission == null)
                             {
                                 permissionId = PERMISSION_NOT_DEFINED;
                                 permissionType = PERMISSION_NOT_DEFINED;
                                 permissionTooltip = null;
+
                             }
                             else
                             {
-                                permissionId = string.Format(PERMISSION_DEFINED, permissionModel.PermissionId);
-                                permissionType = string.Format(PERMISSION_TYPE, permissionModel.PermissionType);
-                                permissionTooltip = string.Format(PERMISSION_TOOLTIP, permissionModel.Description, permissionModel.Group);
+                                permissionId = string.Format(PERMISSION_DEFINED, actionPermission.PermissionId);
+                                permissionType = string.Format(PERMISSION_TYPE, actionPermission.PermissionType);
+                                permissionTooltip = string.Format(PERMISSION_TOOLTIP, actionPermission.Description, actionPermission.Group);
                             }
 
-                            userPermission = ActiveUserEngine.HasPermission(permissionModel) ?
+                            userPermission = methodInfo.GetCustomAttribute<AllowAnonymousAttribute>() != null || ActiveUserEngine.HasPermission(actionPermission) ?
                                "<span class='user-permission-yes'>Yes</span>" :
                                "<span class='user-permission-no'>No</span>";
 

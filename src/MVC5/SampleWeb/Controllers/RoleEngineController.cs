@@ -45,6 +45,22 @@ namespace SampleWeb.Controllers
             return ActiveView();
         }
 
+
+        public static void ImportPermission()
+        {
+            // copy permissions from ActiveRoleEngine.NonSuperAdminPermissions (source code defined permissions)
+            SampleDbContext.Current.Permissions.Clear();
+
+            SampleDbContext.Current.Permissions.AddRange(ActiveRoleEngine.ActiveRoleEngine.NonSuperAdminPermissions
+                .Select(p => new SysPermission
+                {
+                    PermissionId = p.PermissionId,
+                    PermissionName = p.PermissionId,
+                    PermissionGroup = p.Group,
+                    Description = p.Description
+                }));
+        }
+
         /// <summary>
         /// Import permissions from defined permissions
         /// </summary>
@@ -52,17 +68,7 @@ namespace SampleWeb.Controllers
         [HttpPost]
         public ActionResult PermissionImport()
         {
-            // copy permissions from ActiveRoleEngine.NonSuperAdminPermissions (source code defined permissions)
-            SampleDbContext.Current.Permissions.Clear();
-
-            SampleDbContext.Current.Permissions.AddRange(ActiveRoleEngine.ActiveRoleEngine.NonSuperAdminPermissions
-                    .Select(p => new SysPermission
-                    {
-                        PermissionId = p.PermissionId,
-                        PermissionName = p.PermissionId,
-                        PermissionGroup = p.Group,
-                        Description = p.Description
-                    }));
+            ImportPermission();
 
             return ActiveView("~/Views/RoleEngine/Permission.cshtml");
         }

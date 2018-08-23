@@ -5,17 +5,14 @@
 I'm not happy with the Authorize attribute which is too simple and difficult to scale  
 `[Authorize(Users = "Admin, Manager", Roles = "Manager")]`
   
-The roles seem to be fixed and require source code change to add more role.
+The roles seem to be fixed and require source code change to add more role: what if client requests you to add new role? You will need to define new one, and add to the relevant controller/action. 
 
 Active Role Engine aims at a flexible authorization using **permission-based** approach.
 - Controller action has its own permission
 - Role is defined base on such permission
 - User permission can override role permission
 
-So that role can be flexibly defined and scaled.  
-Moreover, with Active Role Engine, defining permission is easy like this  
-` [ActivePermission]`  
-`[ActivePermission(Permission = "CustomPermission", Description = "Custom Permission")]`
+So that role can be flexibly defined and scaled: developer and client are decoupled. The only thing needs to be agreed at the beginning is how the permission should be defined.  
 
 
 
@@ -33,6 +30,7 @@ Permission-based access control is not something new, it has existed for decades
 - User inherit permission from roles
 - User can override the role permission
 
+
 ### Database Design
 ![Database Design](/docs/dbdesign.png "")
 
@@ -47,9 +45,16 @@ Permission-based access control is not something new, it has existed for decades
 
 ### How To Use
 
+With Active Role Engine, defining permission is easy like this  
+` [ActivePermission]`  
+`[ActivePermission(Permission = "CustomPermission", Description = "Custom Permission")]`
+
+In the **most simple** case, you just need to decorate your base controller with `[ActivePermission]`: by this way, each inherited controller will require a permission which is the controller name.
+In the **most complicated** case, you can decorate `[ActivePermission]` to each controller action which allow you to control every single action.
+
 - You can found the script to create database in `scripts` folder. You can freely select your persistence solution
 - Decorate controller or controller action with `ActivePermission` attribute
-  - By default, the PermissionId is the controller or controller action's name
+  - By default, the PermissionId is combination of Area (if any), the controller name and the controller action's name (if any): [Area/]Controller[/Action]
   - You can override the default PermissionId by providing your own
   - The option `Group` and `Description` is used for displaying purpose only
   - `PermissionType` can be:
@@ -59,10 +64,12 @@ Permission-based access control is not something new, it has existed for decades
 - The entry point is `AuthConfig.ConfigRoleEngine`:
   - `RestoreUserSession`: currently the user permission is stored in Session which has a limitation: session timeout. Hence, `RestoreUserSession` is neccessary for the engine to restore the user's permission
   - `HandleUnauthorizedRequest` (optional): how system handle the unauthorized request. If not provided, the engine will return 403 Forbidden
-- The engine does require your extra work to manage user, role, permission
+- The engine does require your extra work to manage user, role, permission which is the responsibility of the application itself
 
 
 Entire sample is provided in SampleWeb application for your reference. The data is stored in memory hence it will be reset next time you start the application.
+
+
 
 ### Sample Code
 **Super Admin**

@@ -1,5 +1,16 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-<h2>Home Page</h2>
-<p>Please login with user sa to setup the role</p>
+<h4>Guideline</h4>
+<p class="pl-3">
+    1. Login with user sa (password not required) to setup <a href="/RoleEngine/Permission">Permissions</a>, <a href="/RoleEngine/Role">Roles</a> and <a href="/RoleEngine/User">Users</a><br />
+    2. Page <a href="/RoleEngine">Defined Permissions</a>: display all defined permissions in the source code, group by Group Name<br />
+    3. Page <a href="/RoleEngine/AllAction">All Actions</a>: display all controllers and controller's actions in the application. You can verify current user's permission here. Try setup role, user and then login with different users<br />
+
+    <br />
+    <br />
+
+    Feel free to define new permission, controller, action to test<br />
+    Note that the data is stored in-memory hence it may be lost every time the application start<br />
+    For saving effort, when application start, all defined permissions will be imported (refer to Global.asax / Application_Start)
+</p>
